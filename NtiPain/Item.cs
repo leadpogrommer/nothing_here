@@ -12,13 +12,15 @@ namespace NtiPain
 
         public int Id;
         public Destination Dest;
-        public int Cell;
 
-        public Item(int id, Destination dest, int cell = 0)
+        public bool Moving;
+
+        public CellLocation Place;
+
+        public Item(int id, Destination dest)
         {
             Id = id;
             Dest = dest;
-            Cell = cell;
         }
     }
 }

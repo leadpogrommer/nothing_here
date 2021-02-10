@@ -11,82 +11,11 @@ namespace NtiPain
 {
     public class StorageController
     {
-        public class ForkLoader
-        {
-            private MemoryInt Pos;
-            private MemoryBit ForkLeft;
-            private MemoryBit ForkRight;
-            private MemoryBit Lift;
-            private MemoryBit MovingX;
-            private MemoryBit MovingZ;
-            private MemoryBit AtLeft;
-            private MemoryBit AtRight;
-            private MemoryBit AtMiddle;
 
-            private MemoryBit[] AtSide;
-            private MemoryBit[] ForkSide;
-
-            public enum Side: int
-            {
-                Right,
-                Left
-            }
-            public ForkLoader(MemoryInt pos, MemoryBit fl, MemoryBit fr, MemoryBit l, MemoryBit x, MemoryBit z, MemoryBit al, MemoryBit ar, MemoryBit am)
-            {
-                Pos = pos;
-                ForkLeft = fl;
-                ForkRight = fr;
-                Lift = l;
-                MovingX = x;
-                MovingZ = z;
-                AtLeft = al;
-                AtMiddle = am;
-                AtRight = ar;
-
-                AtSide = new MemoryBit[2] {AtRight, AtLeft};
-                ForkSide = new MemoryBit[2] {ForkRight, ForkLeft};
-            }
-
-            public void TakeFrom(Side s)
-            {
-                MemoryBit fork = ForkSide[(int) s];
-                MemoryBit at = AtSide[(int) s];
-                fork.Value = true;
-                while (!at.Value) Thread.Sleep(32);
-                Lift.Value = true;
-                Thread.Sleep(300);
-                while (MovingZ.Value) Thread.Sleep(32);
-
-                fork.Value = false;
-                while (!AtMiddle.Value) Thread.Sleep(32);
-                
-            }
-
-            public void MoveTo(int pos)
-            {
-                Pos.Value = pos;
-                Thread.Sleep(100);
-                while (MovingX.Value || MovingZ.Value) Thread.Sleep(32);
-            }
-
-            public void PutTo(Side s)
-            {
-                MemoryBit fork = ForkSide[(int) s];
-                MemoryBit at = AtSide[(int) s];
-
-                fork.Value = true;
-                while(!at.Value)Thread.Sleep(32);
-                Lift.Value = false;
-                Thread.Sleep(300);
-                while (MovingZ.Value) Thread.Sleep(32);
-                fork.Value = false;
-                while(!AtMiddle.Value)Thread.Sleep(32);
-            }
-        }
-        
         public class BunchOf
         {
             private MemoryBit[] Bits;
+
             public BunchOf(params MemoryBit[] bits)
             {
                 foreach (var bit in bits)
@@ -104,7 +33,7 @@ namespace NtiPain
                 }
             }
         }
-        
+
         public ForkLoader LeftForkLoader;
         public ForkLoader RightForkLoader;
 
@@ -119,18 +48,18 @@ namespace NtiPain
             Thread.Sleep(32);
         }
 
-        
-        
+
+
         public void Emit()
         {
             M.emitterEmit.Value = false;
-            
+
             // emitterBase.Value = 6;
             // emitterPart.Value = 2;
             M.emitterEmit.Value = true;
-            
+
             Wait();
-            
+
             M.emitterEmit.Value = false;
 
         }
@@ -139,7 +68,7 @@ namespace NtiPain
         {
             // Input Conveyor
             M.ct1p.Value = true;
-            while (!M.cs1.Value)Thread.Sleep(16);
+            while (!M.cs1.Value) Thread.Sleep(16);
 
             M.ct1p.Value = false;
 
@@ -149,11 +78,11 @@ namespace NtiPain
             // Weird Ip Machine
             M.ct1L.Value = true;
             M.ct1AR.Value = true;
-            while (M.rs1AOut.Value)Thread.Sleep(32);
-            while (!M.rs1AOut.Value)Thread.Sleep(32);
+            while (M.rs1AOut.Value) Thread.Sleep(32);
+            while (!M.rs1AOut.Value) Thread.Sleep(32);
             M.ct1L.Value = false;
             M.ct1AR.Value = false;
-            while (M.atLoadA.Value)Thread.Sleep(16);
+            while (M.atLoadA.Value) Thread.Sleep(16);
             M.loadrcA4.Value = false;
         }
 
@@ -161,10 +90,10 @@ namespace NtiPain
         {
             M.unloadrcB4.Value = true;
             M.ct4BL.Value = true;
-            while (!M.cs4B.Value)Thread.Sleep(32);
+            while (!M.cs4B.Value) Thread.Sleep(32);
             M.unloadrcB4.Value = false;
             M.ct4BL.Value = false;
-            
+
             M.ct4Bp.Value = true;
             M.ct3Bp.Value = true;
             M.ct2Ap.Value = true;
@@ -177,7 +106,7 @@ namespace NtiPain
 
             M.ct1AR.Value = true;
             M.loadrcA4.Value = true;
-            while (M.atLoadA.Value)Thread.Sleep(16);
+            while (M.atLoadA.Value) Thread.Sleep(16);
             M.loadrcA4.Value = false;
             M.ct1AR.Value = false;
 
@@ -190,7 +119,7 @@ namespace NtiPain
             M.ctAp.Value = true;
             M.ctBp.Value = true;
             M.loadrcB3.Value = true;
-            while (M.atLoadB.Value)Thread.Sleep(16);
+            while (M.atLoadB.Value) Thread.Sleep(16);
             M.unloadrcA5.Value = false;
             M.ctAp.Value = false;
             M.ctBp.Value = false;
@@ -219,23 +148,23 @@ namespace NtiPain
             bunch = new BunchOf(M.unloadrcA5, M.ctAp);
             while (!M.csA.Value) Thread.Sleep(32);
             bunch.Disable();
-            
+
             bunch = new BunchOf(M.ctAR, M.ct2AL, M.ct2R);
             while (!M.cs2.Value) Thread.Sleep(32);
             bunch.Disable();
-            
+
             bunch = new BunchOf(M.ct2p, M.ct3p, M.ct4p);
             while (M.rs4Out.Value) Thread.Sleep(32);
             while (!M.rs4Out.Value) Thread.Sleep(32);
             bunch.Disable();
-            
+
         }
 
-        private Road RLeftToRight = new Road(M.rsAtoB,M.rsBfromA,  M.rcA7);
-        private Road RDown = new Road(M.rsAOut, M.rs2AfromA,M.rcA8);
-        private Road RLeftUnload = new Road(null ,M.rsAIn, M.rcA6, M.unloadrcA5);
+        private Road RLeftToRight = new Road(M.rsAtoB, M.rsBfromA, M.rcA7);
+        private Road RDown = new Road(M.rsAOut, M.rs2AfromA, M.rcA8);
+        private Road RLeftUnload = new Road(null, M.rsAIn, M.rcA6, M.unloadrcA5);
         private Road RRightLoad = new Road(M.rsBOut, M.atLoadB, M.loadrcB3, M.rcB2);
-        private Road RUp= new Road(M.rs3AtoB, M.rsBIn, M.rcB1);
+        private Road RUp = new Road(M.rs3AtoB, M.rsBIn, M.rcB1);
         private Road RLeftLoad = new Road(M.rs1AOut, M.atLoadA, M.rcA1, M.rcA2, M.rcA3, M.loadrcA4);
         private Road RRightUnload = new Road(null, M.rs4BIn, M.unloadrcB4, M.rcB5, M.rcB6, M.rcB7);
         private Road RInput = new Road(null, M.rs1In, M.rc11);
@@ -244,13 +173,13 @@ namespace NtiPain
         private Road RMiddleForward = new Road(M.rs2Out, M.rs3In, M.rc14);
         private Road RRightForward = new Road(M.rs3Out, M.rs4In, M.rc16, M.rc15);
         private Road RRightBackward = new Road(M.rs4BOut, M.rs3BIn, M.rcB9, M.rcB8);
-        
+
         private Road RMiddleBackward = new Road(M.rs3AtoA, M.rs2AfromB, M.rcB10);
-        
+
         private Road RLeftBackward = new Road(M.rs2AOut, M.rs1AIn, M.rcA10, M.rcA9);
-        
-        
-        
+
+
+
 
         private Junction JTopLeft;
         private Junction JTopRight;
@@ -258,13 +187,15 @@ namespace NtiPain
         private DoubleJunction JMiddleLeft;
         private DoubleJunction JMiddleRight;
         private DoubleJunction JRight;
-        
+
         public StorageController()
         {
-            LeftForkLoader = new ForkLoader(M.targetPositionA, M.forksLeftA, M.forksRightA, M.liftA, M.movingXA, M.movingZA,
-                M.atLeftA, M.atRightA, M.atMiddleA);
-            RightForkLoader = new ForkLoader(M.targetPositionB, M.forksLeftB, M.forksRightB, M.liftB, M.movingXB, M.movingZB,
-                M.atLeftB, M.atRightB, M.atMiddleB);
+            LeftForkLoader = new ForkLoader(M.targetPositionA, M.forksLeftA, M.forksRightA, M.liftA, M.movingXA,
+                M.movingZA,
+                M.atLeftA, M.atRightA, M.atMiddleA, RLeftLoad, RLeftUnload, Side.Left);
+            RightForkLoader = new ForkLoader(M.targetPositionB, M.forksLeftB, M.forksRightB, M.liftB, M.movingXB,
+                M.movingZB,
+                M.atLeftB, M.atRightB, M.atMiddleB, RRightLoad, RRightUnload, Side.Right);
 
             Updater = new Task(() =>
             {
@@ -272,7 +203,7 @@ namespace NtiPain
                 while (true)
                 {
                     Thread.Sleep(8);
-                    MemoryMap.Instance.Update();    
+                    MemoryMap.Instance.Update();
                 }
             });
             Updater.Start();
@@ -281,7 +212,8 @@ namespace NtiPain
             JTopLeft = new Junction(M.csA)
                 .SetInputs(new JunctionInput(RLeftUnload, M.ctAp))
                 .SetOutputs(new JunctionOutput(RLeftToRight, M.ctAp), new JunctionOutput(RDown, M.ctAR))
-                .SetRoutingTable(new Dictionary<Item.Destination, int>{{Item.Destination.Right, 0}, {Item.Destination.Out, 1}, {Item.Destination.Left, 1}})
+                .SetRoutingTable(new Dictionary<Item.Destination, int>
+                    {{Item.Destination.Right, 0}, {Item.Destination.Out, 1}, {Item.Destination.Left, 1}})
                 .Start();
             JTopRight = new Junction(M.csB)
                 .SetInputs(new JunctionInput(RUp, M.ctBL), new JunctionInput(RLeftToRight, M.ctBp))
@@ -336,10 +268,14 @@ namespace NtiPain
                     {Item.Destination.Out, 1}
                 })
                 .Start();
+            
+            LeftForkLoader.Start();
+            RightForkLoader.Start();
 
 
 
         }
+
         public void Testing()
         {
             // RLeftUnload.Items.Enqueue(new Item(1, Item.Destination.Left));
@@ -347,33 +283,45 @@ namespace NtiPain
             // RLeftUnload.Items.Enqueue(new Item(1, Item.Destination.Out));
             // RLeftToRight.Items.Enqueue(new Item(1, Item.Destination.Right));
             // RUp.Items.Enqueue(new Item(1, Item.Destination.Right));
-            
-            
+
+
             RInput.Items.Enqueue(new Item(1, Item.Destination.Left));
             RInput.Items.Enqueue(new Item(1, Item.Destination.Right));
             RInput.Items.Enqueue(new Item(1, Item.Destination.Out));
-            
+
             RRightUnload.Items.Enqueue(new Item(1, Item.Destination.Left));
             RRightUnload.Items.Enqueue(new Item(1, Item.Destination.Out));
-            
+
             RLeftUnload.Items.Enqueue(new Item(1, Item.Destination.Out));
             RLeftUnload.Items.Enqueue(new Item(1, Item.Destination.Right));
             RLeftBackward.Items.Enqueue(new Item(1, Item.Destination.Left));
         }
-        
-    }
 
-    public class Location
-    {
-        public StorageController.ForkLoader.Side Side;
-        public int Place;
-
-        public Location(StorageController.ForkLoader.Side s, int p)
+        public void Load(int id, CellLocation place)
         {
-            Side = s;
-            Place = p;
+            var toLoad = new Item(id, place.Rack == Side.Left ? Item.Destination.Left : Item.Destination.Right);
+            toLoad.Place = place;
+            toLoad.Moving = true;
+            ItemDatabase.Instance().AddItem(toLoad);
+            RInput.Items.Enqueue(toLoad);
+            Emit();
         }
+
+        public void Unload(int id)
+        {
+            var item = ItemDatabase.Instance().GetItem(id);
+            ForkLoader current = item.Place.Rack == Side.Left ? LeftForkLoader : RightForkLoader;
+            current.UnloadRequests.Enqueue(new UnloadRequest(id, Item.Destination.Out));
+        }
+
+        public void Move(int id, CellLocation dst)
+        {
+            var item = ItemDatabase.Instance().GetItem(id);
+            ForkLoader current = item.Place.Rack == Side.Left ? LeftForkLoader : RightForkLoader;
+            current.UnloadRequests.Enqueue(new UnloadRequest(id, dst.Rack == Side.Left? Item.Destination.Left : Item.Destination.Right, dst));
+        }
+
     }
     
-    // public abstract class AbstractJunction: Thre
+// public abstract class AbstractJunction: Thre
 }
