@@ -46,9 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Junction.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="Memories.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Road.cs" />
     <Compile Include="StorageController.cs" />
   </ItemGroup>
   <ItemGroup>

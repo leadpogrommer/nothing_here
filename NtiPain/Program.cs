@@ -35,18 +35,20 @@ namespace NtiPain
             //
             // }
             var storageController = new StorageController();
+            storageController.Testing();
+            Thread.Sleep(99999999);
             
             // storageController.Emit();
             // storageController.FromStartToLeftStorage();
             // storageController.LeftForkLoader.TakeFrom(StorageController.ForkLoader.Side.Left);
             // storageController.LeftForkLoader.MoveTo(54);
             // storageController.LeftForkLoader.PutTo(StorageController.ForkLoader.Side.Right);
-            
-            storageController.LeftForkLoader.MoveTo(54);
-            storageController.LeftForkLoader.TakeFrom(StorageController.ForkLoader.Side.Right);
-            storageController.LeftForkLoader.MoveTo(55);
-            storageController.LeftForkLoader.PutTo(StorageController.ForkLoader.Side.Right);
-            storageController.FromLeftToOut();
+            //
+            // storageController.LeftForkLoader.MoveTo(54);
+            // storageController.LeftForkLoader.TakeFrom(StorageController.ForkLoader.Side.Right);
+            // storageController.LeftForkLoader.MoveTo(55);
+            // storageController.LeftForkLoader.PutTo(StorageController.ForkLoader.Side.Right);
+            // storageController.FromLeftToOut();
             
             // storageController.BatchLoad(new Location(StorageController.ForkLoader.Side.Left, 54), new Location(StorageController.ForkLoader.Side.Left, 53));
             // storageController.LeftForkLoader.TakeFrom(StorageController.ForkLoader.Side.Left);
