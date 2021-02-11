@@ -190,6 +190,16 @@ namespace NtiPain
 
         public StorageController()
         {
+            
+            M.reset.Value = true;
+            MemoryMap.Instance.Update();
+            Thread.Sleep(32);
+            M.reset.Value = false;
+            // M.pause.Value = false;
+            // M.run.Value = true;
+            MemoryMap.Instance.Update();
+            Thread.Sleep(32);
+            
             LeftForkLoader = new ForkLoader(M.targetPositionA, M.forksLeftA, M.forksRightA, M.liftA, M.movingXA,
                 M.movingZA,
                 M.atLeftA, M.atRightA, M.atMiddleA, RLeftLoad, RLeftUnload, Side.Left);
@@ -271,7 +281,7 @@ namespace NtiPain
             
             LeftForkLoader.Start();
             RightForkLoader.Start();
-
+            
 
 
         }
@@ -309,16 +319,35 @@ namespace NtiPain
 
         public void Unload(int id)
         {
+            // TODO: cancel movement
             var item = ItemDatabase.Instance().GetItem(id);
-            ForkLoader current = item.Place.Rack == Side.Left ? LeftForkLoader : RightForkLoader;
-            current.UnloadRequests.Enqueue(new UnloadRequest(id, Item.Destination.Out));
+            if (item.Moving)
+            {
+                item.PendingForOut = true;
+                Console.WriteLine("UNLOAD: Item is moving: scheduling unload");
+            }
+            else if (item.Dest == Item.Destination.Out)
+            {
+                Console.WriteLine("UNLOAD: Already unloaded");
+            }
+            else
+            {
+                ForkLoader current = item.Place.Rack == Side.Left ? LeftForkLoader : RightForkLoader;
+                current.EnqueueUnloadRequest(new UnloadRequest(id, Item.Destination.Out));
+                Console.WriteLine("UNLOAD: Item is *not* moving: unloading now");
+            }
         }
 
         public void Move(int id, CellLocation dst)
         {
             var item = ItemDatabase.Instance().GetItem(id);
+            if (item.Moving)
+            {
+                Console.WriteLine("MOVE: item is already moving, ignoring request");
+                return;
+            }
             ForkLoader current = item.Place.Rack == Side.Left ? LeftForkLoader : RightForkLoader;
-            current.UnloadRequests.Enqueue(new UnloadRequest(id, dst.Rack == Side.Left? Item.Destination.Left : Item.Destination.Right, dst));
+            current.EnqueueUnloadRequest(new UnloadRequest(id, dst.Rack == Side.Left? Item.Destination.Left : Item.Destination.Right, dst));
         }
 
     }

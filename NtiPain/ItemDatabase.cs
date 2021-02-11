@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NtiPain
 {
@@ -35,6 +37,11 @@ namespace NtiPain
         public void RemoveItem(int id)
         {
             Items.TryRemove(id, out _);
+        }
+
+        public string GetJson()
+        {
+            return JsonConvert.SerializeObject(Items.Values);
         }
     }
 }

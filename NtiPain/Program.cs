@@ -19,7 +19,8 @@ namespace NtiPain
 
             Controller = new StorageController();
             
-            listener.Prefixes.Add("http://127.0.0.1:8080/");
+            listener.Prefixes.Add("http://*:8228/");
+            // listener.Prefixes.Add("http://172.31.224.1:8228/");
             listener.Start();
             
             
@@ -30,7 +31,7 @@ namespace NtiPain
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
                 
-                Console.WriteLine(req.RawUrl);
+                // Console.WriteLine(req.RawUrl);
 
                 Route(req, resp);
 
@@ -65,10 +66,15 @@ namespace NtiPain
                     var dst = new CellLocation(splitted[3]);
                     Controller.Move(id, dst);
                 }
+                else if (splitted[1] == "DATA")
+                {
+                    responseText = ItemDatabase.Instance().GetJson();
+                    
+                }
                 else
                 {
                     responseCode = 500;
-                    responseText = "Unknown endpoint: " + splitted[0];
+                    responseText = "{\"error\": \"Unknown endpoint\"}";
                 }
             }
             catch (Exception e)
@@ -81,7 +87,7 @@ namespace NtiPain
             var buffer = Encoding.UTF8.GetBytes(responseText);
             resp.ContentEncoding = Encoding.UTF8;
             resp.StatusCode = responseCode;
-            resp.ContentType = "text";
+            resp.ContentType = "application/json";
             resp.OutputStream.Write(buffer, 0, buffer.Length);
             resp.Close();
             

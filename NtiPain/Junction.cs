@@ -184,9 +184,9 @@ namespace NtiPain
                 
                 
                 cout.Line.Items.Enqueue(currentItem);
-                Console.WriteLine("Begin Unload");
+                // Console.WriteLine("Begin Unload");
                 cout.Unload();
-                Console.WriteLine("End Unload");
+                // Console.WriteLine("End Unload");
                 
             }
         }

@@ -239,6 +239,11 @@ namespace NtiPain
         public static MemoryInt emitterBase = MemoryMap.Instance.GetInt("Emitter 1 (Base)", MemoryType.Output);
         public static MemoryInt emitterPart = MemoryMap.Instance.GetInt("Emitter 1 (Part)", MemoryType.Output);
 
+        public static MemoryBit reset = MemoryMap.Instance.GetBit("FACTORY I/O (Reset)", MemoryType.Output);
+        public static MemoryBit run = MemoryMap.Instance.GetBit("FACTORY I/O (Run)", MemoryType.Output);
+        public static MemoryBit pause = MemoryMap.Instance.GetBit("FACTORY I/O (Pause)", MemoryType.Output);
+        
+
         // public static Memories()
         // {
         //     // rcA1.Value = true;

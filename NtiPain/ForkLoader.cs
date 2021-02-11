@@ -21,8 +21,18 @@ namespace NtiPain
 
             public Side WhoAmI;
 
-            public ConcurrentQueue<UnloadRequest> UnloadRequests = new ConcurrentQueue<UnloadRequest>();
-            
+            private ConcurrentQueue<UnloadRequest> UnloadRequests = new ConcurrentQueue<UnloadRequest>();
+
+            public void EnqueueUnloadRequest(UnloadRequest req)
+            {
+                var item = ItemDatabase.Instance().GetItem(req.Id);
+                item.Moving = true;
+                if (req.NewDestination == Item.Destination.Out)
+                {
+                    item.Dest = req.NewDestination;
+                }
+                UnloadRequests.Enqueue(req);
+            }
             
             private MemoryBit[] AtSide;
             private MemoryBit[] ForkSide;
@@ -117,11 +127,16 @@ namespace NtiPain
                 MoveTo(currentItem.Place.CellPosition);
                 PutTo(currentItem.Place.CellSide);
                 currentItem.Moving = false;
+                if (currentItem.PendingForOut)
+                {
+                    EnqueueUnloadRequest(new UnloadRequest(currentItem.Id, Item.Destination.Out));
+                }
             }
 
             public void Unload()
             {
                 // TODO: Add unloading safeguard
+                // TODO: Add unloading id checking
                 UnloadRequests.TryDequeue(out UnloadRequest request);
                 var item = ItemDatabase.Instance().GetItem(request.Id);
                 item.Moving = true;
