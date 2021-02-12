@@ -4,6 +4,7 @@ namespace NtiPain
 {
     public class CellLocation
     {
+        
         public Side Rack;
         public Side CellSide;
         public int CellPosition;

@@ -19,7 +19,7 @@ namespace NtiPain
 
             Controller = new StorageController();
             
-            listener.Prefixes.Add("http://*:8228/");
+            listener.Prefixes.Add("http://127.0.0.1:8228/");
             // listener.Prefixes.Add("http://172.31.224.1:8228/");
             listener.Start();
             

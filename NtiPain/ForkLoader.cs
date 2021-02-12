@@ -9,6 +9,7 @@ namespace NtiPain
     
         public class ForkLoader
         {
+            // Memory from Factory I/O
             private MemoryInt Pos;
             private MemoryBit ForkLeft;
             private MemoryBit ForkRight;
@@ -19,8 +20,11 @@ namespace NtiPain
             private MemoryBit AtRight;
             private MemoryBit AtMiddle;
 
+            // Is it right or left fork loader
             public Side WhoAmI;
-
+            
+            
+            
             private ConcurrentQueue<UnloadRequest> UnloadRequests = new ConcurrentQueue<UnloadRequest>();
 
             public void EnqueueUnloadRequest(UnloadRequest req)
@@ -31,6 +35,9 @@ namespace NtiPain
                 {
                     item.Dest = req.NewDestination;
                 }
+
+                req.OldLocation = item.Place;
+                item.Place = req.NewCellLocation;
                 UnloadRequests.Enqueue(req);
             }
             
@@ -112,8 +119,9 @@ namespace NtiPain
             {
                 while (true)
                 {
+                    
+                    while (!UnloadRequests.IsEmpty) Unload();
                     if (!InputLine.Enabled) Load();
-                    if (!UnloadRequests.IsEmpty) Unload();
                     Thread.Sleep(16);
                 }
             }
@@ -141,8 +149,8 @@ namespace NtiPain
                 var item = ItemDatabase.Instance().GetItem(request.Id);
                 item.Moving = true;
                 
-                MoveTo(item.Place.CellPosition);
-                TakeFrom(item.Place.CellSide);
+                MoveTo(request.OldLocation.CellPosition);
+                TakeFrom(request.OldLocation.CellSide);
                 item.Dest = request.NewDestination;
                 item.Place = request.NewCellLocation;
                 if (request.NewDestination != Item.Destination.Out && WhoAmI == request.NewCellLocation.Rack)
